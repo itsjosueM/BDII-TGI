@@ -2,49 +2,157 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8"/>
-  <title>Imobiliária - Demo</title>
+  <title>Imobiliária - Dashboard</title>
   <style>
-    body{font-family: Arial, sans-serif; max-width:900px;margin:20px auto;padding:10px}
-    table{border-collapse:collapse;width:100%}
-    th,td{border:1px solid #ddd;padding:8px;text-align:left}
-    th{background:#f4f4f4}
-    .card{padding:10px;border:1px solid #eee;margin-bottom:10px;border-radius:6px}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+
+    header {
+      background-color: #1b1b1b;
+      color: #fff;
+      text-align: center;
+      padding: 20px 0;
+      letter-spacing: 1px;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #e63946;
+      font-size: 26px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .card {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #e63946;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      margin: 5px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #c92e3b;
+      transform: scale(1.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    th {
+      background-color: #1b1b1b;
+      color: #fff;
+      text-transform: uppercase;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover td {
+      background-color: #ffeaea;
+    }
+
+    footer {
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    #output p {
+      text-align: center;
+      color: #666;
+    }
   </style>
 </head>
 <body>
-  <h1>Imobiliária - Demo</h1>
-  <div class="card">
-    <button onclick="loadImoveis()">Listar Imóveis</button>
-    <button onclick="loadMedia()">Média de vendas por proprietário</button>
-    <button onclick="loadTop()">Top proprietários</button>
-  </div>
-  <div id="output"></div>
+  <header>
+    <h1>Imobiliária - Dashboard</h1>
+  </header>
 
-<script>
-async function loadImoveis(){
-  const res = await fetch('/imoveis');
-  const data = await res.json();
-  renderTable(data,['id','titulo','valor_venda','proprietario']);
-}
-async function loadMedia(){
-  const res = await fetch('/media_vendas_por_proprietario');
-  const data = await res.json();
-  renderTable(data,['proprietario','media_venda']);
-}
-async function loadTop(){
-  const res = await fetch('/top_proprietarios_vendas');
-  const data = await res.json();
-  renderTable(data,['proprietario','qtd_contratos','total_vendido','media_venda']);
-}
-function renderTable(data, columns){
-  if(!data) return;
-  let html = '<table><thead><tr>' + columns.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
-  data.forEach(row=>{
-    html += '<tr>' + columns.map(c=>'<td>'+ (row[c] !== undefined ? row[c] : '') +'</td>').join('') + '</tr>';
-  });
-  html += '</tbody></table>';
-  document.getElementById('output').innerHTML = html;
-}
-</script>
+  <main>
+    <div class="card">
+      <button onclick="loadImoveis()">Listar Imóveis</button>
+      <button onclick="loadMedia()">Média de vendas por corretor</button>
+      <button onclick="loadTop()">Top corretores</button>
+    </div>
+
+    <div id="output">
+      <p>Selecione uma opção acima para visualizar os dados.</p>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Imobiliária Demo — Todos os direitos reservados.
+  </footer>
+
+  <script>
+    async function loadImoveis(){
+      const res = await fetch('/imoveis');
+      const data = await res.json();
+      renderTable(data,['id','titulo','valor_venda','proprietario']);
+    }
+
+    async function loadMedia(){
+      const res = await fetch('/media_vendas_por_corretor');
+      const data = await res.json();
+      renderTable(data,['corretor','media_venda']);
+    }
+
+    async function loadTop(){
+      const res = await fetch('/top_corretores_vendas');
+      const data = await res.json();
+      renderTable(data,['corretor','qtd_contratos','total_vendido','media_venda']);
+    }
+
+    function renderTable(data, columns){
+      if(!data || data.length === 0){
+        document.getElementById('output').innerHTML = '<p>Nenhum dado encontrado.</p>';
+        return;
+      }
+      let html = '<table><thead><tr>' + columns.map(c=>'<th>'+c.replace('_',' ')+'</th>').join('') + '</tr></thead><tbody>';
+      data.forEach(row=>{
+        html += '<tr>' + columns.map(c=>'<td>'+ (row[c] !== undefined ? row[c] : '') +'</td>').join('') + '</tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('output').innerHTML = html;
+    }
+  </script>
 </body>
 </html>

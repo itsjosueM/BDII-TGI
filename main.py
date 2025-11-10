@@ -94,19 +94,34 @@ def list_imoveis():
     with SessionLocal() as s:
         imoveis = s.query(Imovel).all()
         return [{'id': i.id_imovel, 'titulo': i.titulo, 'valor_venda': float(i.valor_venda or 0), 'proprietario': i.proprietario.nome if i.proprietario else None} for i in imoveis]
-
-@app.get('/media_vendas_por_proprietario')
-def media_vendas_por_proprietario():
+@app.get('/media_vendas_por_corretor')
+@app.get('/media_vendas_por_corretor')
+def media_vendas_por_corretor():
     with SessionLocal() as s:
-        rows = s.query(Pessoa.nome, func.avg(Contrato.valor).label('media_venda'))            .join(Contrato, Contrato.id_proprietario == Pessoa.id_pessoa)            .filter(Contrato.id_tipo_contrato==1)            .group_by(Pessoa.nome)            .order_by(func.avg(Contrato.valor).desc()).all()
-        return [{'proprietario': r[0], 'media_venda': float(r[1] or 0)} for r in rows]
+        rows = s.query(Pessoa.nome, func.avg(Contrato.valor).label('media_venda'))\
+            .join(Contrato, Contrato.id_corretor == Pessoa.id_pessoa)\
+            .filter(Contrato.id_tipo_contrato == 1)\
+            .group_by(Pessoa.nome)\
+            .order_by(func.avg(Contrato.valor).desc()).all()
+        return [{'corretor': r[0], 'media_venda': float(r[1] or 0)} for r in rows]
 
-@app.get('/top_proprietarios_vendas')
-def top_proprietarios_vendas():
+
+@app.get('/top_corretores_vendas')
+def top_corretores_vendas():
     with SessionLocal() as s:
-        rows = s.query(Pessoa.nome, func.count(Contrato.id_contrato).label('qtd'), func.sum(Contrato.valor).label('total_vendido'), func.avg(Contrato.valor).label('media_venda'))            .join(Contrato, Contrato.id_proprietario == Pessoa.id_pessoa)            .filter(Contrato.id_tipo_contrato==1)            .group_by(Pessoa.nome)            .order_by(func.sum(Contrato.valor).desc()).limit(5).all()
-        return [{'proprietario': r[0], 'qtd_contratos': int(r[1] or 0), 'total_vendido': float(r[2] or 0), 'media_venda': float(r[3] or 0)} for r in rows]
+        rows = s.query(Pessoa.nome, func.count(Contrato.id_contrato).label('qtd_contratos'),
+                    func.sum(Contrato.valor).label('total_vendido'),
+                    func.avg(Contrato.valor).label('media_venda'))\
+            .join(Contrato, Contrato.id_corretor == Pessoa.id_pessoa)\
+            .filter(Contrato.id_tipo_contrato == 1)\
+            .group_by(Pessoa.nome)\
+            .order_by(func.sum(Contrato.valor).desc())\
+            .limit(5).all()
+        return [{'corretor': r[0], 'qtd_contratos': int(r[1] or 0),
+                    'total_vendido': float(r[2] or 0),
+                    'media_venda': float(r[3] or 0)} for r in rows]
 
+'''
 @app.get('/consultas/sql_example')
 def raw_sql_example():
     with engine.connect() as conn:
@@ -119,4 +134,4 @@ def raw_sql_example():
         ORDER BY qtd_contratos DESC;
         """)
         r = conn.execute(q).fetchall()
-        return [dict(row) for row in r]
+        return [dict(row) for row in r]'''
