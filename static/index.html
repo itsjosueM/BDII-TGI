@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <title>Imobiliária - Demo</title>
+  <style>
+    body{font-family: Arial, sans-serif; max-width:900px;margin:20px auto;padding:10px}
+    table{border-collapse:collapse;width:100%}
+    th,td{border:1px solid #ddd;padding:8px;text-align:left}
+    th{background:#f4f4f4}
+    .card{padding:10px;border:1px solid #eee;margin-bottom:10px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h1>Imobiliária - Demo</h1>
+  <div class="card">
+    <button onclick="loadImoveis()">Listar Imóveis</button>
+    <button onclick="loadMedia()">Média de vendas por proprietário</button>
+    <button onclick="loadTop()">Top proprietários</button>
+  </div>
+  <div id="output"></div>
+
+<script>
+async function loadImoveis(){
+  const res = await fetch('/imoveis');
+  const data = await res.json();
+  renderTable(data,['id','titulo','valor_venda','proprietario']);
+}
+async function loadMedia(){
+  const res = await fetch('/media_vendas_por_proprietario');
+  const data = await res.json();
+  renderTable(data,['proprietario','media_venda']);
+}
+async function loadTop(){
+  const res = await fetch('/top_proprietarios_vendas');
+  const data = await res.json();
+  renderTable(data,['proprietario','qtd_contratos','total_vendido','media_venda']);
+}
+function renderTable(data, columns){
+  if(!data) return;
+  let html = '<table><thead><tr>' + columns.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  data.forEach(row=>{
+    html += '<tr>' + columns.map(c=>'<td>'+ (row[c] !== undefined ? row[c] : '') +'</td>').join('') + '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('output').innerHTML = html;
+}
+</script>
+</body>
+</html>
