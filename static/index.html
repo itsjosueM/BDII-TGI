@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <title>Apache Imobiliária - Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #0f0f0f;
+      margin: 0;
+      padding: 0;
+      color: #f2f2f2;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header img {
+      width: 180px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-size: 28px;
+      color: #e63946;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 0;
+    }
+
+    main {
+      background-color: #1b1b1b;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      text-align: center;
+      width: 85%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card {
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #e63946;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #b82e3a;
+      transform: scale(1.05);
+    }
+
+    #output {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    h2 {
+      color: #e63946;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 90%;
+      background-color: #222;
+      color: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e63946;
+      color: #fff;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #2a2a2a;
+    }
+
+    tr:hover td {
+      background-color: #3a3a3a;
+    }
+
+    footer {
+      text-align: center;
+      color: #bbb;
+      font-size: 13px;
+      margin-top: 25px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #1b1b1b;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      color: #e63946;
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .modal-content label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: #333;
+      color: #eee;
+      margin-top: 5px;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/static/Blue and Black Modern Technology Presentation (5).png" alt="Logo Apache Imobiliária">
+    <h1>Apache Imobiliária</h1>
+  </header>
+
+  <main>
+    <div class="card">
+      <button onclick="loadImoveis()">Listar Imóveis</button>
+      <button onclick="loadMedia()">Média de vendas por corretor</button>
+      <button onclick="loadTop()">Top corretores</button>
+    </div>
+
+    <div id="output">
+      <p>Selecione uma opção acima para visualizar ou manipular os dados.</p>
+    </div>
+
+    <div class="actions">
+      <button onclick="openModal('create')">➕ Inserir Imóvel</button>
+      <button onclick="openModal('update')">✏️ Atualizar Imóvel</button>
+      <button onclick="openModal('archive')">📦 Arquivar Imóvel</button>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Apache Imobiliária — Todos os direitos reservados.
+  </footer>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3 id="modal-title"></h3>
+      <form id="modal-form">
+        <div id="form-fields"></div>
+        <button type="submit" style="margin-top:15px;">Confirmar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    async function loadImoveis(){
+      const res = await fetch('/imoveis');
+      const data = await res.json();
+      renderTable('📋 Lista de Imóveis', data, ['id','titulo','valor_venda','proprietario']);
+    }
+
+    async function loadMedia(){
+      const res = await fetch('/media_vendas_por_corretor');
+      const data = await res.json();
+      renderTable('📊 Média de Vendas por Corretor', data, ['corretor','media_venda']);
+    }
+
+    async function loadTop(){
+      const res = await fetch('/top_corretores_vendas');
+      const data = await res.json();
+      renderTable('🏆 Top Corretores de Vendas', data, ['corretor','qtd_contratos','total_vendido','media_venda']);
+    }
+
+    function openModal(type){
+      const modal = document.getElementById('modal');
+      const title = document.getElementById('modal-title');
+      const form = document.getElementById('modal-form');
+      const fields = document.getElementById('form-fields');
+      modal.style.display = 'flex';
+      form.reset();
+
+      if(type === 'create'){
+        title.innerText = '➕ Inserir Novo Imóvel';
+        fields.innerHTML = `
+          <label>Título:</label><input name="titulo" required>
+          <label>Descrição:</label><input name="descricao">
+          <label>Valor Venda:</label><input name="valor_venda" type="number" step="0.01" required>
+          <label>ID Proprietário:</label><input name="id_proprietario" type="number" required>
+        `;
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          const data = Object.fromEntries(new FormData(form));
+          const res = await fetch('/imoveis', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+          alert(res.ok ? "✅ Imóvel criado com sucesso!" : "⚠️ Não foi possível criar o imóvel.");
+          closeModal();
+          loadImoveis();
+        };
+      }
+
+      if(type === 'update'){
+        title.innerText = '✏️ Atualizar Imóvel';
+        fields.innerHTML = `
+          <label>ID do Imóvel:</label><input name="id" type="number" required>
+          <label>Novo Título:</label><input name="titulo">
+          <label>Novo Valor:</label><input name="valor_venda" type="number" step="0.01">
+        `;
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          const data = Object.fromEntries(new FormData(form));
+          const res = await fetch('/imoveis/' + data.id, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+          alert(res.ok ? "✅ Imóvel atualizado com sucesso!" : "⚠️ Erro ao atualizar imóvel.");
+          closeModal();
+          loadImoveis();
+        };
+      }
+
+      if(type === 'archive'){
+        title.innerText = '📦 Arquivar Imóvel';
+        fields.innerHTML = `<label>ID do Imóvel:</label><input name="id" type="number" required>`;
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          const data = Object.fromEntries(new FormData(form));
+          const res = await fetch('/imoveis/' + data.id + '/arquivar', {method:'PUT'});
+          const msg = await res.json();
+          alert(res.ok ? "📁 " + msg.mensagem : "⚠️ Erro ao arquivar o imóvel.");
+          closeModal();
+          loadImoveis();
+        };
+      }
+    }
+
+    function closeModal(){
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function renderTable(title, data, columns){
+      if(!data || data.length === 0){
+        document.getElementById('output').innerHTML = '<p>Nenhum dado encontrado.</p>';
+        return;
+      }
+      let html = '<h2>' + title + '</h2>';
+      html += '<table><thead><tr>' + columns.map(c=>'<th>'+c.replace('_',' ')+'</th>').join('') + '</tr></thead><tbody>';
+      data.forEach(row=>{
+        html += '<tr>' + columns.map(c=>'<td>'+ (row[c] !== undefined ? row[c] : '') +'</td>').join('') + '</tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('output').innerHTML = html;
+    }
+  </script>
+</body>
+</html>
