@@ -8,7 +8,7 @@ Base = declarative_base()
 # Associação Pessoa <-> Endereco
 pessoa_endereco = Table(
     "pessoa_endereco", Base.metadata,
-    Column("id_pessoa", Integer, ForeignKey("pessoa.id_pessoa"), primary_key=True),
+    Column("id_pessoa", Integer, ForeignKey("pessoa.id_pessoa"), primary_key=True, autoincrement=True),
     Column("id_endereco", Integer, ForeignKey("endereco.id_endereco"), primary_key=True),
     Column("id_tipo_endereco", Integer, ForeignKey("tipo_endereco.id_tipo_endereco"))
 )
@@ -16,7 +16,7 @@ pessoa_endereco = Table(
 # Associação Imovel <-> Caracteristica
 imovel_caracteristica = Table(
     "imovel_caracteristica", Base.metadata,
-    Column("id_imovel", Integer, ForeignKey("imovel.id_imovel"), primary_key=True),
+    Column("id_imovel", Integer, ForeignKey("imovel.id_imovel"), primary_key=True, autoincrement=True),
     Column("id_caracteristica", Integer, ForeignKey("caracteristica.id_caracteristica"), primary_key=True),
     Column("detalhe", String(100))
 )
@@ -24,53 +24,53 @@ imovel_caracteristica = Table(
 # ===== Tipos e Status =====
 class TipoPessoa(Base):
     __tablename__ = "tipo_pessoa"
-    id_tipo_pessoa = Column(Integer, primary_key=True)
+    id_tipo_pessoa = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 class TipoEndereco(Base):
     __tablename__ = "tipo_endereco"
-    id_tipo_endereco = Column(Integer, primary_key=True)
+    id_tipo_endereco = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 class TipoImovel(Base):
     __tablename__ = "tipo_imovel"
-    id_tipo_imovel = Column(Integer, primary_key=True)
+    id_tipo_imovel = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 class StatusImovel(Base):
     __tablename__ = "status_imovel"
-    id_status_imovel = Column(Integer, primary_key=True)
+    id_status_imovel = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 class TipoContrato(Base):
     __tablename__ = "tipo_contrato"
-    id_tipo_contrato = Column(Integer, primary_key=True)
+    id_tipo_contrato = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 class StatusContrato(Base):
     __tablename__ = "status_contrato"
-    id_status_contrato = Column(Integer, primary_key=True)
+    id_status_contrato = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 class MetodoPagamento(Base):
     __tablename__ = "metodo_pagamento"
-    id_metodo_pagamento = Column(Integer, primary_key=True)
+    id_metodo_pagamento = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 class StatusPagamento(Base):
     __tablename__ = "status_pagamento"
-    id_status_pagamento = Column(Integer, primary_key=True)
+    id_status_pagamento = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 class StatusAgendamento(Base):
     __tablename__ = "status_agendamento"
-    id_status_agendamento = Column(Integer, primary_key=True)
+    id_status_agendamento = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(50))
 
 # ===== Entidades Principais =====
 class Pessoa(Base):
     __tablename__ = "pessoa"
-    id_pessoa = Column(Integer, primary_key=True)
+    id_pessoa = Column(Integer, primary_key=True, autoincrement=True)
     nome = Column(String(120))
     cpf_cnpj = Column(String(20), unique=True)
     email = Column(String(120))
@@ -81,7 +81,7 @@ class Pessoa(Base):
 
 class Endereco(Base):
     __tablename__ = "endereco"
-    id_endereco = Column(Integer, primary_key=True)
+    id_endereco = Column(Integer, primary_key=True, autoincrement=True)
     logradouro = Column(String(120))
     numero = Column(String(10))
     complemento = Column(String(50))
@@ -94,7 +94,7 @@ class Endereco(Base):
 
 class Imovel(Base):
     __tablename__ = "imovel"
-    id_imovel = Column(Integer, primary_key=True)
+    id_imovel = Column(Integer, primary_key=True, autoincrement=True)
     titulo = Column(String(100))
     descricao = Column(Text)
     id_tipo_imovel = Column(Integer, ForeignKey("tipo_imovel.id_tipo_imovel"))
@@ -117,13 +117,13 @@ class Imovel(Base):
 
 class Caracteristica(Base):
     __tablename__ = "caracteristica"
-    id_caracteristica = Column(Integer, primary_key=True)
+    id_caracteristica = Column(Integer, primary_key=True, autoincrement=True)
     nome = Column(String(60))
     descricao = Column(String(255))
 
 class Contrato(Base):
     __tablename__ = "contrato"
-    id_contrato = Column(Integer, primary_key=True)
+    id_contrato = Column(Integer, primary_key=True, autoincrement=True)
     id_tipo_contrato = Column(Integer, ForeignKey("tipo_contrato.id_tipo_contrato"))
     id_status_contrato = Column(Integer, ForeignKey("status_contrato.id_status_contrato"))
     id_imovel = Column(Integer, ForeignKey("imovel.id_imovel"))
@@ -137,7 +137,7 @@ class Contrato(Base):
 
 class Pagamento(Base):
     __tablename__ = "pagamento"
-    id_pagamento = Column(Integer, primary_key=True)
+    id_pagamento = Column(Integer, primary_key=True, autoincrement=True)
     id_contrato = Column(Integer, ForeignKey("contrato.id_contrato"))
     data_pagamento = Column(Date)
     valor_pago = Column(Numeric(12, 2))
@@ -146,7 +146,7 @@ class Pagamento(Base):
 
 class Agendamento(Base):
     __tablename__ = "agendamento"
-    id_agendamento = Column(Integer, primary_key=True)
+    id_agendamento = Column(Integer, primary_key=True, autoincrement=True)
     id_imovel = Column(Integer, ForeignKey("imovel.id_imovel"))
     id_cliente = Column(Integer, ForeignKey("pessoa.id_pessoa"))
     id_corretor = Column(Integer, ForeignKey("pessoa.id_pessoa"))
