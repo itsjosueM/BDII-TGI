@@ -37,7 +37,8 @@ entre a equipe, inteligível para todos.
 
 Criada a representação pictórica do sistema, é hora de construir!
 
-<img width="1136" height="891" alt="image" src="https://github.com/user-attachments/assets/9890f248-2b31-4fe4-8a35-414995e35519" />
+<img width="908" height="684" alt="image" src="https://github.com/user-attachments/assets/c541b29f-caba-4f42-99cf-8d5f54aa0851" />
+
 
 # 3 - Ambiente de virtualização para o sistena
 
