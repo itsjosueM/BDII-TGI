@@ -21,8 +21,6 @@ em seguida, utilizamos o framework orm SQLalchemy para o mapeamento objeto-relac
 
 3 - Ambiente de virtualização para o sistema
 
-4 - Como usar?
-
 # 1 - Modelagem do sistema de uma imobiliaria
 
 Antes de pôr a mão na massa, primeiro modelamos nosso sistema usando diagrama de classes.
@@ -50,6 +48,8 @@ O db trata-se do banco de dados utilizado na aplicação, no nosso caso, gerenci
 
 O serviço 'app' é a lógica de negócio, é o principal módulo do sistena. Ele lê url do banco de dados,
 autenticando-se ao banco.
+
+
 
 
 
