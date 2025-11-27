@@ -9,7 +9,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   app:
     build: .
@@ -22,5 +22,21 @@ services:
     depends_on:
       - db
 
+
+  pgadmin:
+    image: dpage/pgadmin4:latest # Imagem oficial do pgAdmin 4
+    environment:
+      # Credenciais para acessar a interface web do pgAdmin
+      PGADMIN_DEFAULT_EMAIL: admin@imobiliaria.com
+      PGADMIN_DEFAULT_PASSWORD: admin_password_pg
+    ports:
+      - "5050:80" # Mapeia a porta 5050 do seu host para a porta 80 do container do pgAdmin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - db # Garante que o banco de dados suba antes do pgAdmin
+
 volumes:
   pgdata:
+
+  pgadmin-data:
